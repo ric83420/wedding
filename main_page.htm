@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家宏 & 庭萱的婚禮邀請</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* 重置與全域設定 */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Noto Serif TC', serif; 
+      background-color: #faf9f6; 
+      color: #333; 
+      overflow-x: hidden; 
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 【修正重點 1】改用原生 img 標籤做固定背景，繞過 iOS CSS 限制 */
+    .bg-image {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover; /* 確保圖片不變形填滿 */
+      z-index: -2;
+    }
+    .bg-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.35); /* 黑色半透明遮罩 */
+      z-index: -1;
+    }
+
+    /* 首頁滿版封面區 */
+    .hero {
+      position: relative; width: 100%; 
+      height: 100vh; /* 備用高度 */
+      height: 100dvh; /* 支援 iOS 動態高度 */
+      display: flex; align-items: center; justify-content: center;
+    }
+    
+    /* 封面文字保留載入動畫 (純 CSS 不受 JS 阻擋影響) */
+    .hero-content {
+      position: relative; text-align: center; color: white; padding: 0 20px;
+      animation: fadeInUp 1.2s ease-out forwards;
+    }
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .hero-content p.subtitle { font-size: 1.1rem; letter-spacing: 0.2em; margin-bottom: 16px; font-weight: 300; }
+    .hero-content h1 { font-size: 3.5rem; letter-spacing: 0.1em; margin-bottom: 24px; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+    .hero-content .line { width: 60px; height: 1px; background: white; margin: 0 auto 24px; }
+    .hero-content p.year { font-size: 1.25rem; letter-spacing: 0.2em; font-weight: 300; }
+    
+    @media (max-width: 768px) {
+      .hero-content h1 { font-size: 2.8rem; }
+    }
+
+    /* 主要內容區塊容器 */
+    .main-content {
+      position: relative; background-color: #faf9f6;
+      box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
+      /* 【修正重點 2】移除預設透明度隱藏，確保內容 100% 可見 */
+    }
+
+    /* 共同區塊設定 */
+    .section { padding: 80px 24px; max-width: 900px; margin: 0 auto; text-align: center; }
+    .section-title { font-size: 2rem; color: #444; margin-bottom: 30px; letter-spacing: 0.1em; }
+    .section-desc { font-size: 1.1rem; line-height: 1.8; color: #666; margin-bottom: 50px; }
+
+    /* 資訊卡片網格 */
+    .card-grid { display: grid; grid-template-columns: 1fr; gap: 32px; text-align: left; }
+    @media (min-width: 768px) { .card-grid { grid-template-columns: 1fr 1fr; } }
+    
+    .card {
+      background: white; padding: 40px; border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #f0f0f0;
+    }
+    .card h3 { font-size: 1.25rem; color: #444; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 20px; }
+    .card p { color: #666; margin-bottom: 8px; font-size: 1rem; }
+    .card .sub-text { font-size: 0.85rem; color: #999; margin-top: 12px; }
+
+    /* 按鈕 */
+    .btn {
+      display: inline-block; width: 100%; text-align: center;
+      background: #333; color: white; padding: 14px 24px;
+      border: none; border-radius: 8px; margin-top: 24px;
+      font-size: 1rem; font-family: inherit; cursor: pointer;
+    }
+
+    /* 表單區塊 */
+    .form-container { background: white; padding: 80px 24px; border-top: 1px solid #f0f0f0; }
+    .form-wrapper { max-width: 600px; margin: 0 auto; text-align: left; background: #faf9f6; padding: 40px; border-radius: 16px; border: 1px solid #eee; }
+    
+    .form-row { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px; }
+    @media (min-width: 768px) { .form-row { grid-template-columns: 1fr 1fr; } }
+    
+    .form-group { margin-bottom: 24px; }
+    .form-group label { display: block; margin-bottom: 8px; font-size: 0.95rem; color: #555; font-weight: 600; }
+    .form-control {
+      width: 100%; padding: 14px 16px; border: 1px solid #ddd; border-radius: 8px;
+      font-size: 1rem; font-family: inherit; background: white;
+    }
+    
+    .radio-group { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+    @media (min-width: 600px) { .radio-group { flex-direction: row; gap: 32px; } }
+    .radio-label { display: flex; align-items: center; color: #444; font-size: 0.95rem; }
+    .radio-label input { margin-right: 10px; width: 16px; height: 16px; }
+
+    /* 頁尾 */
+    footer { text-align: center; padding: 40px; font-size: 0.85rem; color: #aaa; background: white; letter-spacing: 0.1em; }
+  </style>
+</head>
+<body>
+
+  <!-- 原生圖檔作為固定背景 -->
+  <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=2070&auto=format&fit=crop" class="bg-image" alt="背景圖片">
+  <div class="bg-overlay"></div>
+
+  <!-- 1. 滿版封面區 -->
+  <header class="hero">
+    <div class="hero-content">
+      <p class="subtitle">SAVE THE DATE</p>
+      <h1>家宏 & 庭萱</h1>
+      <div class="line"></div>
+      <p class="year">2026</p>
+    </div>
+  </header>
+
+  <!-- 主要內容區塊 (直接顯示，不再使用 JS 隱藏) -->
+  <main class="main-content">
+    
+    <!-- 2. 婚禮資訊區塊 -->
+    <section class="section">
+      <h2 class="section-title">誠摯邀請</h2>
+      <p class="section-desc">
+        我們準備要步入人生的下一個階段了！<br>
+        誠摯地邀請您來參與我們的婚禮，<br>
+        現場準備了充滿木木梟與黏黏寶元素的佈置，<br>
+        還有我們家馬爾濟斯與黑貓的迎賓立牌，期待與您分享這份喜悅。
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>時間</h3>
+          <p>2026 年 X 月 X 日 (星期X)</p>
+          <p>11:30 迎賓茶會</p>
+          <p>12:00 準時開席</p>
+        </div>
+        <div class="card">
+          <h3>地點</h3>
+          <p>XX 飯店 XX 廳</p>
+          <p class="sub-text">地址：台北市信義區XXXXXX</p>
+          <button class="btn">開啟 Google Maps 導航</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. RSVP 出席回覆表單區 -->
+    <section class="form-container">
+      <div class="section" style="padding-top: 0; padding-bottom: 20px;">
+        <h2 class="section-title">出席回覆 RSVP</h2>
+        <p class="section-desc" style="margin-bottom: 40px; font-size: 0.95rem;">
+          請於 2026 年 X 月 X 日前填寫完畢<br>以便為您安排最舒適的座位
+        </p>
+        
+        <div class="form-wrapper">
+          <form>
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>賓客姓名</label>
+                <input type="text" id="liff-name" class="form-control" placeholder="請輸入姓名">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>聯絡電話</label>
+                <input type="tel" class="form-control" placeholder="09XX-XXX-XXX">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>是否出席？</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="attend"> 是，我很樂意參加
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="attend"> 抱歉，當天無法出席
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>出席人數 (含本人)</label>
+              <select class="form-control">
+                <option>1 人</option>
+                <option>2 人</option>
+                <option>3 人</option>
+                <option>4 人 (含以上)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>飲食偏好</label>
+              <input type="text" class="form-control" placeholder="例如：1位素食、不吃牛...">
+            </div>
+
+            <button type="button" class="btn" style="margin-top: 10px; padding: 16px;">
+              送出回覆
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 4. 頁尾 -->
+  <footer>
+    &copy; 2026 家宏 & 庭萱 Wedding.
+  </footer>
+
+</body>
+</html>
