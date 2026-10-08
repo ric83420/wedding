@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>家宏 & 庭萱的婚禮邀請</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- 引入思源宋體、霞鶩文楷，以及新增 Great Vibes 英文草書字體 -->
+  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@300;400&family=Noto+Serif+TC:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
   
   <style>
     /* 重置與全域設定 */
@@ -18,155 +19,414 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* 【修正重點 1】改用原生 img 標籤做固定背景，繞過 iOS CSS 限制 */
-    .bg-image {
+    /* 修正手機版跳動：改用 position: fixed 且高度鎖定為 100% 確保背景穩定 */
+    .bg-container {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      object-fit: cover; /* 確保圖片不變形填滿 */
       z-index: -2;
+      pointer-events: none;
+    }
+    .bg-image {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      transform: scale(1.05);
+      animation: kenBurns 20s ease-out infinite alternate;
+    }
+    @keyframes kenBurns {
+      0% { transform: scale(1.05); }
+      100% { transform: scale(1.15); }
     }
     .bg-overlay {
-      position: fixed;
+      position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.35); /* 黑色半透明遮罩 */
+      /* 漸層遮罩，讓文字區域變暗以確保清晰度 */
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%);
       z-index: -1;
     }
 
-    /* 首頁滿版封面區 */
+    /* 首頁滿版封面區：使用 100dvh 完美適應手機動態視窗 */
     .hero {
       position: relative; width: 100%; 
-      height: 100vh; /* 備用高度 */
-      height: 100dvh; /* 支援 iOS 動態高度 */
+      height: 100vh;
+      height: 100dvh;
       display: flex; align-items: center; justify-content: center;
     }
     
-    /* 封面文字保留載入動畫 (純 CSS 不受 JS 阻擋影響) */
-    .hero-content {
-      position: relative; text-align: center; color: white; padding: 0 20px;
-      animation: fadeInUp 1.2s ease-out forwards;
+    /* 封面純文字區塊 */
+    .hero-text-box {
+      position: relative;
+      text-align: center;
+      color: white;
+      padding: 0 20px;
+      opacity: 0;
+      animation: fadeInUpBox 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
     }
-    @keyframes fadeInUp {
+
+    @keyframes fadeInUpBox {
       0% { opacity: 0; transform: translateY(30px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    .hero-content p.subtitle { font-size: 1.1rem; letter-spacing: 0.2em; margin-bottom: 16px; font-weight: 300; }
-    .hero-content h1 { font-size: 3.5rem; letter-spacing: 0.1em; margin-bottom: 24px; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-    .hero-content .line { width: 60px; height: 1px; background: white; margin: 0 auto 24px; }
-    .hero-content p.year { font-size: 1.25rem; letter-spacing: 0.2em; font-weight: 300; }
     
+    /* 封面區文字 - 更新為優雅草書字體 */
+    .hero-text-box p.subtitle { 
+      font-family: 'Great Vibes', cursive;
+      font-size: 3.5rem; 
+      letter-spacing: 0.05em; 
+      margin-bottom: 5px; 
+      font-weight: 400; 
+      color: #d4af37; 
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.8s forwards;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.7); 
+    }
+
+    .hero-text-box h1 { 
+      /* 中文保留高質感的霞鶩文楷 */
+      font-family: 'LXGW WenKai TC', 'Noto Serif TC', serif;
+      font-size: 3.8rem; 
+      letter-spacing: 0.25em; 
+      margin-bottom: 24px; 
+      font-weight: 400; 
+      text-indent: 0.125em; 
+      text-shadow: 2px 2px 12px rgba(0,0,0,0.7); 
+      opacity: 0;
+      animation: fadeIn 1s ease-out 1.2s forwards;
+    }
+
+    /* 漸層光澤分隔線 */
+    .hero-text-box .line { 
+      width: 0; 
+      height: 1px; 
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      margin: 0 auto 24px; 
+      animation: expandLine 1.5s ease-out 1.6s forwards; 
+    }
+
+    .hero-text-box p.year { 
+      font-size: 1.5rem; 
+      letter-spacing: 0.3em; 
+      font-weight: 300; 
+      opacity: 0;
+      animation: fadeIn 1s ease-out 2s forwards;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    }
+    
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes expandLine {
+      100% { width: 140px; opacity: 1; }
+    }
+
+    /* RWD 手機版微調 */
     @media (max-width: 768px) {
-      .hero-content h1 { font-size: 2.8rem; }
+      .hero-text-box h1 { font-size: 3rem; letter-spacing: 0.2em; }
     }
 
     /* 主要內容區塊容器 */
     .main-content {
       position: relative; background-color: #faf9f6;
-      box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
-      /* 【修正重點 2】移除預設透明度隱藏，確保內容 100% 可見 */
+      box-shadow: 0 -15px 30px rgba(0,0,0,0.15);
+      z-index: 2; /* 確保內容蓋在固定背景之上 */
     }
 
     /* 共同區塊設定 */
-    .section { padding: 80px 24px; max-width: 900px; margin: 0 auto; text-align: center; }
-    .section-title { font-size: 2rem; color: #444; margin-bottom: 30px; letter-spacing: 0.1em; }
-    .section-desc { font-size: 1.1rem; line-height: 1.8; color: #666; margin-bottom: 50px; }
-
-    /* 資訊卡片網格 */
-    .card-grid { display: grid; grid-template-columns: 1fr; gap: 32px; text-align: left; }
-    @media (min-width: 768px) { .card-grid { grid-template-columns: 1fr 1fr; } }
+    .section { padding: 100px 24px; max-width: 900px; margin: 0 auto; text-align: center; }
     
-    .card {
-      background: white; padding: 40px; border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #f0f0f0;
+    /* 無邊框排版容器 */
+    .invitation-content {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+      z-index: 5;
     }
-    .card h3 { font-size: 1.25rem; color: #444; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 20px; }
-    .card p { color: #666; margin-bottom: 8px; font-size: 1rem; }
-    .card .sub-text { font-size: 0.85rem; color: #999; margin-top: 12px; }
+
+    /* 寶可夢裝飾圖 */
+    .pokemon-decor {
+      margin-bottom: -5px;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    .pokemon-decor img {
+      width: 110px;
+      height: auto;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
+      animation: floatUpDown 3s ease-in-out infinite;
+    }
+    .pokemon-decor img:nth-child(2) {
+      width: 95px;
+      margin-left: -15px; 
+      animation-delay: 0.75s;
+    }
+    @keyframes floatUpDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .section-title { font-size: 2.2rem; color: #333; margin-bottom: 25px; letter-spacing: 0.15em; font-weight: 600; }
+    .section-title::after {
+      content: ''; display: block; width: 40px; height: 2px; background: #d4af37; margin: 20px auto 0;
+    }
+    .section-desc { font-size: 1.15rem; line-height: 2; color: #666; font-weight: 300; }
+
+    /* 婚禮時間排版 */
+    .wedding-time {
+      margin: 45px auto;
+      padding: 15px 0;
+      max-width: 500px;
+    }
+    .wedding-time h3 {
+      font-size: 1.5rem;
+      color: #444;
+      margin-bottom: 15px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+    }
+    @media (max-width: 600px) {
+      .wedding-time h3 {
+        font-size: 1.15rem;
+        letter-spacing: 0.05em;
+      }
+    }
+    
+    .wedding-time p {
+      font-size: 2.2rem;
+      color: #d4af37;
+      letter-spacing: 0.1em;
+      font-weight: 400;
+      font-family: 'Times New Roman', serif;
+    }
+
+    /* 倒數計時器 */
+    .countdown-container {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 20px;
+      width: 100%;
+    }
+    @media (max-width: 600px) {
+      .countdown-container { gap: 8px; }
+    }
+    .time-box {
+      background: #ffffff;
+      padding: 20px 15px;
+      border-radius: 16px;
+      min-width: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.12);
+    }
+    .time-box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+    }
+    @media (max-width: 600px) {
+      .time-box { 
+        min-width: 0; 
+        flex: 1;      
+        padding: 15px 5px; 
+      }
+    }
+    .time-box .number {
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: #d4af37;
+      margin-bottom: 5px;
+      font-family: 'Times New Roman', serif;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .time-box .number { font-size: 1.8rem; }
+    }
+    .time-box .label {
+      font-size: 0.8rem;
+      color: #888;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-right: -0.2em; 
+    }
+    @media (max-width: 600px) {
+      .time-box .label { 
+        font-size: 0.65rem; 
+        letter-spacing: 0.1em; 
+        margin-right: -0.1em;
+      }
+    }
+
+    /* 重複觸發過場動畫 (Reveal) */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
 
     /* 按鈕 */
     .btn {
       display: inline-block; width: 100%; text-align: center;
-      background: #333; color: white; padding: 14px 24px;
-      border: none; border-radius: 8px; margin-top: 24px;
-      font-size: 1rem; font-family: inherit; cursor: pointer;
+      background: #333; color: white; padding: 16px 24px;
+      border: none; border-radius: 8px; margin-top: 30px;
+      font-size: 1.05rem; font-family: inherit; cursor: pointer; letter-spacing: 0.1em;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      background: #d4af37; color: white;
     }
 
     /* 表單區塊 */
-    .form-container { background: white; padding: 80px 24px; border-top: 1px solid #f0f0f0; }
-    .form-wrapper { max-width: 600px; margin: 0 auto; text-align: left; background: #faf9f6; padding: 40px; border-radius: 16px; border: 1px solid #eee; }
+    .form-container { background: white; padding: 100px 24px; border-top: 1px solid #f0f0f0; }
+    .form-wrapper { max-width: 650px; margin: 0 auto; text-align: left; background: #faf9f6; padding: 50px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); }
     
     .form-row { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px; }
     @media (min-width: 768px) { .form-row { grid-template-columns: 1fr 1fr; } }
     
-    .form-group { margin-bottom: 24px; }
-    .form-group label { display: block; margin-bottom: 8px; font-size: 0.95rem; color: #555; font-weight: 600; }
+    .form-group { margin-bottom: 28px; }
+    .form-group label { display: block; margin-bottom: 10px; font-size: 1rem; color: #444; font-weight: 600; }
     .form-control {
-      width: 100%; padding: 14px 16px; border: 1px solid #ddd; border-radius: 8px;
-      font-size: 1rem; font-family: inherit; background: white;
+      width: 100%; padding: 15px 18px; border: 1px solid #e0e0e0; border-radius: 8px;
+      font-size: 1rem; font-family: inherit; background: white; transition: border-color 0.3s;
     }
+    .form-control:focus { outline: none; border-color: #d4af37; }
     
-    .radio-group { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+    .radio-group { display: flex; flex-direction: column; gap: 16px; margin-top: 12px; }
     @media (min-width: 600px) { .radio-group { flex-direction: row; gap: 32px; } }
-    .radio-label { display: flex; align-items: center; color: #444; font-size: 0.95rem; }
-    .radio-label input { margin-right: 10px; width: 16px; height: 16px; }
+    .radio-label { display: flex; align-items: center; color: #555; font-size: 1rem; cursor: pointer; }
+    .radio-label input { margin-right: 12px; width: 18px; height: 18px; accent-color: #d4af37; }
 
     /* 頁尾 */
-    footer { text-align: center; padding: 40px; font-size: 0.85rem; color: #aaa; background: white; letter-spacing: 0.1em; }
+    footer { text-align: center; padding: 50px; font-size: 0.9rem; color: #999; background: #faf9f6; letter-spacing: 0.15em; font-family: 'Noto Serif TC', serif; }
   </style>
 </head>
 <body>
 
-  <!-- 原生圖檔作為固定背景 -->
-  <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=2070&auto=format&fit=crop" class="bg-image" alt="背景圖片">
-  <div class="bg-overlay"></div>
+  <!-- 固定背景容器，避免手機滾動時因工具列收合而重新計算畫面造成跳動 -->
+  <div class="bg-container">
+    <img src="image/group-photo-1.jpg" class="bg-image" alt="背景圖片">
+    <div class="bg-overlay"></div>
+  </div>
 
   <!-- 1. 滿版封面區 -->
   <header class="hero">
-    <div class="hero-content">
-      <p class="subtitle">SAVE THE DATE</p>
+    <div class="hero-text-box">
+      <p class="subtitle">Wedding</p>
       <h1>家宏 & 庭萱</h1>
       <div class="line"></div>
-      <p class="year">2026</p>
+      <p class="year">2027</p>
     </div>
   </header>
 
-  <!-- 主要內容區塊 (直接顯示，不再使用 JS 隱藏) -->
+  <!-- 主要內容區塊 -->
   <main class="main-content">
     
-    <!-- 2. 婚禮資訊區塊 -->
+    <!-- 2. 無邊框誠摯邀請與倒數區塊 -->
     <section class="section">
-      <h2 class="section-title">誠摯邀請</h2>
-      <p class="section-desc">
-        我們準備要步入人生的下一個階段了！<br>
-        誠摯地邀請您來參與我們的婚禮，<br>
-        現場準備了充滿木木梟與黏黏寶元素的佈置，<br>
-        還有我們家馬爾濟斯與黑貓的迎賓立牌，期待與您分享這份喜悅。
-      </p>
-
-      <div class="card-grid">
-        <div class="card">
-          <h3>時間</h3>
-          <p>2026 年 X 月 X 日 (星期X)</p>
-          <p>11:30 迎賓茶會</p>
-          <p>12:00 準時開席</p>
+      <div class="invitation-content reveal">
+        
+        <!-- 木木梟與黏黏寶裝飾圖 -->
+        <div class="pokemon-decor">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/722.png" alt="木木梟">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/704.png" alt="黏黏寶">
         </div>
-        <div class="card">
-          <h3>地點</h3>
-          <p>XX 飯店 XX 廳</p>
-          <p class="sub-text">地址：台北市信義區XXXXXX</p>
-          <button class="btn">開啟 Google Maps 導航</button>
+
+        <!-- 標題與內文 -->
+        <h2 class="section-title">誠摯邀請</h2>
+        <p class="section-desc">
+          我們準備要步入人生的下一個階段了，<br>
+          誠摯地邀請您來參與我們的婚禮。<br>
+        </p>
+
+        <!-- 婚禮時間 -->
+        <div class="wedding-time">
+          <h3>2027 年 9 月 25 日 (星期六)</h3>
+          <p>12:00</p>
+        </div>
+
+        <!-- 倒數計時器 -->
+        <div class="countdown-container" id="countdown">
+          <div class="time-box">
+            <span class="number" id="cd-days">00</span>
+            <span class="label">Days</span>
+          </div>
+          <div class="time-box">
+            <span class="number" id="cd-hours">00</span>
+            <span class="label">Hours</span>
+          </div>
+          <div class="time-box">
+            <span class="number" id="cd-mins">00</span>
+            <span class="label">Minutes</span>
+          </div>
+          <div class="time-box">
+            <span class="number" id="cd-secs">00</span>
+            <span class="label">Seconds</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. 地點指引區塊 -->
+    <section class="section">
+      <div class="invitation-content reveal">
+        <h2 class="section-title">地點指引</h2>
+        <p class="section-desc">
+          <strong>大直典華</strong><br>
+          台北市中山區植福路 8 號
+        </p>
+
+        <!-- Google Maps 嵌入 -->
+        <div class="reveal delay-1" style="margin: 30px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3613.5607062453664!2d121.5544493!3d25.083397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ac0e719114d7%3A0xc33e1456a2bb3c50!2z5aSn55u05YW46I-v!5e0!3m2!1szh-TW!2stw!4v1717387391924!5m2!1szh-TW!2stw" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        
+        <!-- 交通資訊 -->
+        <div class="reveal delay-2" style="text-align: left; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 25px rgba(212, 175, 55, 0.12); margin-bottom: 30px;">
+          <h3 style="font-size: 1.2rem; color: #444; margin-bottom: 15px; font-weight: 600;">🚇 大眾運輸</h3>
+          <p style="font-size: 1rem; color: #666; line-height: 1.8; margin-bottom: 20px;">
+            <strong>捷運：</strong>文湖線「劍南路站」2 號出口，步行約 3 分鐘即可抵達。<br>
+            <strong>公車：</strong>可搭乘至「捷運劍南路站」或「美麗華站」下車，步行即可抵達。
+          </p>
+          
+          <h3 style="font-size: 1.2rem; color: #444; margin-bottom: 15px; font-weight: 600;">🚗 自行開車</h3>
+          <p style="font-size: 1rem; color: #666; line-height: 1.8;">
+            <strong>館內停車：</strong>大直典華 B2 設有免費停車場（車位有限，容易客滿）。<br>
+            <strong>周邊停車：</strong>若館內車位已滿，建議停放至周邊「捷運劍南路站轉乘停車場（敬業二路）」、Times 或嘟嘟房等收費停車場。
+          </p>
+        </div>
+
+        <div class="reveal delay-3">
+          <a href="https://www.google.com/maps/search/?api=1&query=大直典華" target="_blank" class="btn" style="max-width: 300px; border-radius: 30px;">
+            開啟 Google Maps 導航
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- 3. RSVP 出席回覆表單區 -->
+    <!-- 4. RSVP 出席回覆表單區 -->
     <section class="form-container">
       <div class="section" style="padding-top: 0; padding-bottom: 20px;">
-        <h2 class="section-title">出席回覆 RSVP</h2>
-        <p class="section-desc" style="margin-bottom: 40px; font-size: 0.95rem;">
-          請於 2026 年 X 月 X 日前填寫完畢<br>以便為您安排最舒適的座位
+        <h2 class="section-title reveal">出席回覆 RSVP</h2>
+        <p class="section-desc reveal delay-1" style="margin-bottom: 40px;">
+          請於 2027 年 8 月 25 日前填寫完畢<br>以便為您安排最舒適的座位
         </p>
         
-        <div class="form-wrapper">
+        <div class="form-wrapper reveal delay-2">
           <form>
             <div class="form-row">
               <div class="form-group" style="margin-bottom: 0;">
@@ -206,7 +466,7 @@
               <input type="text" class="form-control" placeholder="例如：1位素食、不吃牛...">
             </div>
 
-            <button type="button" class="btn" style="margin-top: 10px; padding: 16px;">
+            <button type="button" class="btn" style="margin-top: 15px; padding: 18px; font-weight: 600;">
               送出回覆
             </button>
           </form>
@@ -216,10 +476,59 @@
 
   </main>
 
-  <!-- 4. 頁尾 -->
+  <!-- 5. 頁尾 -->
   <footer>
-    &copy; 2026 家宏 & 庭萱 Wedding.
+    &copy; 2027 家宏 & 庭萱 Wedding v0.4
   </footer>
 
+  <!-- 捲動動畫與倒數計時腳本 -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // 1. 捲動浮現動畫邏輯
+      const reveals = document.querySelectorAll(".reveal");
+      const revealOptions = {
+        threshold: 0.15,
+        rootMargin: "0px 0px -50px 0px"
+      };
+
+      const revealOnScroll = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+          } else {
+            entry.target.classList.remove("show");
+          }
+        });
+      }, revealOptions);
+
+      reveals.forEach(reveal => {
+        revealOnScroll.observe(reveal);
+      });
+
+      // 2. 倒數計時器邏輯
+      const weddingDate = new Date("September 25, 2027 12:00:00").getTime();
+      
+      const countdownTimer = setInterval(function() {
+        const now = new Date().getTime();
+        const distance = weddingDate - now;
+        
+        if (distance < 0) {
+          clearInterval(countdownTimer);
+          document.getElementById("countdown").innerHTML = "<div class='time-box' style='width: 100%'><span class='number'>婚禮已經開始囉！</span></div>";
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("cd-days").innerText = days.toString().padStart(2, '0');
+        document.getElementById("cd-hours").innerText = hours.toString().padStart(2, '0');
+        document.getElementById("cd-mins").innerText = minutes.toString().padStart(2, '0');
+        document.getElementById("cd-secs").innerText = seconds.toString().padStart(2, '0');
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
